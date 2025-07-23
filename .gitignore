@@ -1,0 +1,49 @@
+# ----------------
+# Node.js
+# ----------------
+node_modules/
+.env
+.env.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+dist/
+build/
+logs/
+*.log
+
+# Ignore production build
+/build
+
+# Ignore MongoDB local data dumps
+dump/
+*.mongodb
+
+# ----------------
+# React
+# ----------------
+*.log
+*.lock
+.env.development.local
+.env.test.local
+.env.production.local
+.cache/
+coverage/
+*.env.*
+
+# ----------------
+# VS Code / Editor
+# ----------------
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# ----------------
+# OS-specific
+# ----------------
+.DS_Store
+Thumbs.db
