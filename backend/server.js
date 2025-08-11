@@ -29,6 +29,7 @@ app.use("/api", chartRoute)
 app.use("/api/trend", trendRoutes)
 
 
+
 connectDb().then(() => {
     app.get('/', (req, res) => {
       res.send('Real-time AQI API is working ✅');

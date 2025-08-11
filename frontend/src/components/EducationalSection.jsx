@@ -11,7 +11,7 @@ const pollutants = [
 
 export default function EducationalSection() {
   return (
-    <section className="py-16 bg-gradient-to-br from-[#f4f8fb] to-[#d4d9dd] text-gray-800" id="learn">
+    <section className="py-16 bg-gradient-to-br from-[#f4f8fb] to-[#d3d6d8] text-gray-800" id="learn">
       <div className="max-w-6xl mx-auto px-4">
         <h2 className="text-4xl font-bold text-center mb-4">Understanding Air Quality</h2>
         <p className="text-center text-lg text-gray-600 mb-12">

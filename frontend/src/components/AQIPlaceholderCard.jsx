@@ -13,7 +13,7 @@ export default function AQIPlaceholderCard() {
   const randomFact = funFacts[Math.floor(Math.random() * funFacts.length)];
 
   return (
-    <div className="rounded-xl border-4 border-dashed border-gray-200 shadow-sm p-6 max-w-md w-full bg-gray-50 text-center">
+    <div className="h-full w-full rounded-xl border-4 border-dashed border-gray-200 shadow-sm p-6 bg-gray-50 text-center flex items-center justify-center">
       <div className="flex flex-col items-center justify-center h-full">
               <svg 
         className="w-24 h-24 text-blue-300 mb-4 animate-float" 

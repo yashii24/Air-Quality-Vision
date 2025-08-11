@@ -95,7 +95,7 @@ export default function Home() {
 
 
   return (
-    <div className="p-4 space-y-6 max-w-screen-xl mx-auto">
+    <div className="p-4 space-y-12 max-w-screen-xl mx-auto">
 
       <InputForm onSubmit={(handleFetch)}  />
 
@@ -103,9 +103,9 @@ export default function Home() {
       {error && <p className="text-red-500 mt-4">{error}</p>}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <MapSection selectedStation={selectedStation} />
-        <div className="space-y-4">
-          <div className="rounded-xl shadow-xl p-7 max-w-md w-full min-h-[300px]">
+
+        <div className="h-full w-full">
+          <div className="rounded-2xl shadow-lg border border-gray-200 p-6 bg-white w-full h-full">
             {data ? (
               <AQICard data={data} />
             ) : (
@@ -113,6 +113,10 @@ export default function Home() {
             )}
           </div>
         </div>
+        
+        <MapSection selectedStation={selectedStation} />
+
+
       </div>
 
 
@@ -129,7 +133,7 @@ export default function Home() {
             ))}
           </div>
 
-          <div className="bg-white p-4 rounded-lg shadow-lg">
+          <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold">
                 {selectedPollutant} Trend at {selectedStation}

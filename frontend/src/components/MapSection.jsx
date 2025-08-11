@@ -57,18 +57,21 @@ export default function MapSection({ selectedStation }) {
   }, [selectedStation]);
 
   return (
-    <div className="w-full h-[400px] rounded-xl overflow-hidden shadow">
-      <MapContainer center={mapCenter} zoom={zoom} style={{ height: "100%", width: "100%" }}>
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+      <div className="w-full h-[460px] bg-white rounded-2xl shadow-lg border border-gray-200 p-4 overflow-hidden">
+          <h2 className="text-xl md:text-3xl font-bold text-gray-900 mb-4">
+            AQI Monitoring Stations
+          </h2>
+        <MapContainer center={mapCenter} zoom={zoom} style={{ height: "88%", width: "100%" }}>
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
         
 
-        {stations.map((station, idx) => {
-          const aqi = station.aqi;
-          const color = getAQIColor(aqi);
-          const isSelected = selectedStation?.toLowerCase() === station.name?.toLowerCase();
+          {stations.map((station, idx) => {
+            const aqi = station.aqi;
+            const color = getAQIColor(aqi);
+            const isSelected = selectedStation?.toLowerCase() === station.name?.toLowerCase();
 
           const icon = L.divIcon({
             className: "custom-aqi-icon",
@@ -77,12 +80,12 @@ export default function MapSection({ selectedStation }) {
                 background: ${color};
                 color: #000;
                 font-size: 12px;
-                padding: 2px 8px;
-                border-radius: 16px;
+                padding: 4px 10px;
+                border-radius: 9999px;
                 text-align: center;
-                font-weight: 600;
-                box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-                border: 1px solid #444;
+                font-weight: 500;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+                border: 1px solid rgba(0, 0, 0, 0.2);
               ">
                 ${aqi}
               </div>
@@ -98,7 +101,7 @@ export default function MapSection({ selectedStation }) {
               icon={icon}
             >
               <Tooltip direction="top" offset={[0, -10]} opacity={1} permanent={isSelected}>
-                <div className="text-xs font-semibold text-center">
+                <div className="text-xs font-medium text-center text-black">
                   {station.name}
                   <br />
                   AQI: {aqi}
@@ -106,9 +109,9 @@ export default function MapSection({ selectedStation }) {
               </Tooltip>
             </Marker>
           );
-        })}
-      </MapContainer>
-    </div>
+          })}
+        </MapContainer>
+      </div>
   );
 }
 
