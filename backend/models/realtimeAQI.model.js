@@ -30,7 +30,7 @@ const RealtimeAQISchema = new mongoose.Schema({
     BP: Number,
     VWS: Number,
   }
-}, { collection: "realtime_data" });
+}, { collection: "hourly_data" });
 
 // Prevent duplicate entries for same station and hour
 RealtimeAQISchema.index({ station: 1, timestamp: 1 }, { unique: true });

@@ -2,7 +2,7 @@ const waqiStationMap = {
   "Anand Vihar": "delhi/anand-vihar",//w
   "Burari Crossing": "delhi/burari-crossing",//w
   "Alipur": "delhi/alipur",//w
-  "Ashok Vihar": "delhi/ashok-vihar",
+  "Ashok Vihar": "delhi/satyawati-college",
   "Aya Nagar": "delhi/aya-nagar",//w
   "Bawana": "delhi/pooth-khurd--bawana",//
   "CRRI Mathura Road": "delhi/crri-mathura-road",//
@@ -22,7 +22,7 @@ const waqiStationMap = {
   "NSIT Dwarka": "delhi/nsit-dwarka",
   "Najafgarh": "delhi//bramprakash-ayurvedic-hospital--najafgarh",//w
   "Narela": "delhi/narela",//w
-  "Nehru Nagar": "delhi/nehru-nagar",
+  "Nehru Nagar": "delhi/pgdav-college",
   "North Campus": "delhi/north-campus",//w
   "Okhla Phase-2": "delhi/dite-okhla",//w
   "Patparganj": "delhi/mother-dairy-plant--parparganj",//w
@@ -34,6 +34,7 @@ const waqiStationMap = {
   "Sirifort": "delhi/sirifort",//w
   "Sonia Vihar": "delhi/sonia-vihar-water-treatment-plant-djb",//w
   "Sri Aurobindo Marg": "delhi/sri-auribindo-marg",//w
+  "Vivek Vihar": "delhi/iti-shahdra",
   "Wazirpur": "delhi/delhi-institute-of-tool-engineering--wazirpur"//w
 };
 

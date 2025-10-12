@@ -1,0 +1,13 @@
+.gitattributes
+.gitignore
+backend/.env
+backend/controllers/trendController.js
+backend/routes/forecast.js
+backend/server.js
+frontend/src/Pages/Home.jsx
+frontend/src/components/AQICard.jsx
+frontend/src/components/Forecast.jsx
+frontend/src/components/InputForm.jsx
+frontend/src/components/MapSection.jsx
+frontend/src/context/StationsContext.jsx
+frontend/src/main.jsx

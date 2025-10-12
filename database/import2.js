@@ -46,7 +46,7 @@ function parseValue(val) {
 }
 
 async function processAndStoreData() {
-    const dataDir = './More Data';
+    const dataDir = './AQIDATA';
 
     try {
         const client = new MongoClient(mongoUri);
@@ -55,6 +55,7 @@ async function processAndStoreData() {
         const collection = db.collection(collectionName);
 
         const files = fs.readdirSync(dataDir);
+        console.log('📁 Found files:', files);
 
         for (const file of files) {
             if (!file.endsWith('.xlsx')) continue;

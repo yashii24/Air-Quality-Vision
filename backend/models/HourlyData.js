@@ -30,8 +30,9 @@ const pollutantSchema = new mongoose.Schema({
 const hourlyDataSchema = new mongoose.Schema({
   station: String,
   city: String,
-  timestamp: Date,
+  // timestamp: Date,
+  timestamp : String,
   pollutants: pollutantSchema
-});
+}, { collection: "hourly_data" });
 
 module.exports = mongoose.model('HourlyData', hourlyDataSchema);
