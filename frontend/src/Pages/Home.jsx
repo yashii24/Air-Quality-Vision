@@ -8,7 +8,7 @@ import PollutantCard from "../components/PollutantCard";
 import TrendChart from "../components/TrendChart";
 import StationRanking from "../components/StationRanking";
 import AQIPlaceholderCard from "../components/AQIPlaceholderCard";
-
+import Forecast from "../components/Forecast";
 
 export default function Home() {
   const [data, setData] = useState(null);
@@ -166,6 +166,12 @@ export default function Home() {
         </>
       )}
 
+
+      <Forecast
+        station={station}
+        date={selectedDate}
+        time={new Date().toLocaleTimeString("en-GB", { hour12: false })}
+      />
 
       <div className="w-full">
         <StationRanking onStationClick={(name) => setSelectedStation(name)} />

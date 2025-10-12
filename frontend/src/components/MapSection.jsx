@@ -10,12 +10,13 @@ import axios from "axios";
 import "leaflet/dist/leaflet.css";
 
 const AQI_COLORS = [
-  { max: 50, color: "#009966" },
-  { max: 100, color: "#ffde33" },
-  { max: 150, color: "#ff9933" },
-  { max: 200, color: "#cc0033" },
-  { max: 300, color: "#660099" },
-  { max: Infinity, color: "#7e0023" },
+  { min: 0, max: 50, color: "#009966", label: "0-50" },
+  { min: 51, max: 100, color: "#ffde33", label: "51-100" },
+  { min: 101, max: 150, color: "#ff9933", label: "101-150" },
+  { min: 151, max: 200, color: "#cc0033", label: "151-200" },
+  { min: 201, max: 300, color: "#660099", label: "201-300" },
+  { min: 301, max: 400, color: "#7e0023", label: "301-400" },
+  { min: 401, max: 500, color: "#7e0023", label: "401-500+" }
 ];
 
 const getAQIColor = (aqi) => {
