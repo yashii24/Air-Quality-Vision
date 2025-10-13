@@ -87,3 +87,14 @@ Aqi_website_code/__pycache__/
 venv/
 *.xlsx
 
+# Ignore large data and common artifacts
+Aqi_website_code/air_quality.hourly_data.csv
+Aqi_website_code/*.csv
+Aqi_website_code/*.xlsx
+database/
+*.xlsx
+*.xls
+.env
+node_modules/
+*.pyc
+__pycache__/
