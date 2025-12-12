@@ -5,5 +5,5 @@ matplotlib
 seaborn
 fastapi
 uvicorn
-
+pymongo
 
