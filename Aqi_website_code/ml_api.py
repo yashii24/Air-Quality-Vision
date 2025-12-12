@@ -10,9 +10,8 @@ from forecasting import forecast_next_days
 from datetime import datetime
 
 
-MONGO_URI = "mongodb+srv://AirQualityVision:air-quality-vision-2025@air-quality-vision.ddiulhr.mongodb.net/"
-DB_NAME = "air_quality"
-COLLECTION_NAME = "hourly_data"
+MONGO_URI =  os.getenv("MONGO_URI")
+COLLECTION_NAME = os.getenv("COLLECTION_NAME")
 
 STATE = {"df": None, "model": None, "feature_cols": None}
 
