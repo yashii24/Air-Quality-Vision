@@ -42,7 +42,7 @@ def load_data_from_mongo():
             "timestamp": 1,
             "pollutants": 1,
         }
-    ).limit(100000)  
+    ).limit(5000)  
 
     df = pd.DataFrame(list(cursor))
 
