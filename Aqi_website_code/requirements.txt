@@ -1,9 +1,8 @@
-pandas
-numpy
-scikit-learn
-matplotlib
-seaborn
 fastapi
 uvicorn
+pandas
 pymongo
-
+scikit-learn
+python-dotenv
+pydantic
+numpy

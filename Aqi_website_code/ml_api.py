@@ -10,10 +10,10 @@ from modeling import train_model
 from forecasting import forecast_next_days
 from datetime import datetime
 
-# MONGO_URI = "mongodb+srv://AirQualityVision:air-quality-vision-2025@air-quality-vision.ddiulhr.mongodb.net/"
-# DB_NAME= "air_quality"
-# COLLECTION_NAME = "hourly_data"
 
+# ------------------------------
+# ENV VARIABLES (Render)
+# ------------------------------
 MONGO_URI = os.getenv("MONGO_URI")
 DB_NAME = os.getenv("DB_NAME")
 COLLECTION_NAME = os.getenv("COLLECTION_NAME")
@@ -21,18 +21,15 @@ COLLECTION_NAME = os.getenv("COLLECTION_NAME")
 STATE = {"df": None, "model": None, "feature_cols": None}
 
 
+# ------------------------------
+# Load Data from MongoDB
+# ------------------------------
 def load_data_from_mongo():
-    """Fetch limited, relevant data from MongoDB."""
     print("🔹 Connecting to MongoDB...")
     client = MongoClient(MONGO_URI)
     collection = client[DB_NAME][COLLECTION_NAME]
 
-    doc = collection.find_one()
-    print("🔍 Sample MongoDB document:")
-    print(doc)
-
-    print("🔹 Fetching data from MongoDB...")
-
+    print("🔹 Fetching limited dataset...")
     cursor = collection.find(
         {},
         {
@@ -42,80 +39,82 @@ def load_data_from_mongo():
             "timestamp": 1,
             "pollutants": 1,
         }
-    ).limit(5000)  
+    ).limit(5000)
 
     df = pd.DataFrame(list(cursor))
-
-    print(f"✅ Loaded {len(df)} rows from MongoDB.")
-    print("📊 Columns in MongoDB data:", df.columns.tolist()) 
+    print(f"✅ Loaded {len(df)} rows")
 
     if df.empty:
         return df
 
-
+    # Extract pollutant JSON → columns
     if "pollutants" in df.columns:
         pollutants_df = pd.json_normalize(df["pollutants"])
         df = pd.concat([df.drop(columns=["pollutants"]), pollutants_df], axis=1)
 
+    # Normalize column names
     rename_map = {
         "PM2.5": "PM25",
         "pm25": "PM25",
-        "pollutants.PM25": "PM25",
-        "pollutants.PM2.5": "PM25",
-        "pollutants.pm25": "PM25",
-        "pollutants.PM10": "PM10",
-        "pollutants.NO2": "NO2",
-        "pollutants.O3": "O3",
-        "pollutants.SO2": "SO2",
-        "pollutants.CO": "CO",
-        "pollutants.AQI": "AQI",
+        "PM10": "PM10",
+        "NO2": "NO2",
+        "O3": "O3",
+        "SO2": "SO2",
+        "CO": "CO",
+        "AQI": "AQI",
     }
+    df.rename(columns=rename_map, inplace=True)
 
-    df.rename(columns={k: v for k, v in rename_map.items() if k in df.columns}, inplace=True)
-
-
-
+    # Fix timestamp
     if "timestamp" in df.columns:
         df.rename(columns={"timestamp": "Timestamp"}, inplace=True)
 
+    df["Timestamp"] = pd.to_datetime(df["Timestamp"], errors="coerce")
 
-    if "Timestamp" in df.columns:
-        df["Timestamp"] = pd.to_datetime(df["Timestamp"], errors="coerce")
+    # Remove missing target values
+    if "PM25" in df.columns:
+        df.dropna(subset=["PM25"], inplace=True)
     else:
-        raise ValueError("❌ No timestamp column found in MongoDB data.")
+        raise ValueError("❌ PM25 column missing from MongoDB data.")
 
-
-    target_col = "PM25"  
-    if target_col in df.columns:
-        df.dropna(subset=[target_col], inplace=True)
-    else:
-        print(f"⚠️ Column '{target_col}' not found in data. Available columns: {df.columns.tolist()}")
-    
-    print(f"✅ After cleaning: {len(df)} rows, columns: {df.columns.tolist()[:10]}")
     return df
 
 
+# ------------------------------
+# App lifespan: load data + train model once
+# ------------------------------
 @asynccontextmanager
 async def lifespan(app):
-    """Runs once on startup: loads Mongo data + trains model."""
     df = load_data_from_mongo()
+
     if df.empty:
-        print("⚠️ MongoDB returned no data. Skipping model training.")
+        print("⚠️ Empty DB → Skipping training")
         STATE["df"] = pd.DataFrame()
         STATE["model"] = None
         STATE["feature_cols"] = []
         yield
         return
-    df = preprocess_data(df)  
+
+    df = preprocess_data(df)
     results = train_model(df)
 
     STATE["df"] = df
     STATE["model"] = results["model"]
     STATE["feature_cols"] = list(results["X_train"].columns)
+
+    print("✅ Model trained and ready.")
     yield
 
 
-app = FastAPI(title="AQI ML API", version="1.0", lifespan=lifespan)
+# ------------------------------
+# FastAPI App
+# ------------------------------
+app = FastAPI(
+    title="AQI ML API",
+    version="1.0",
+    lifespan=lifespan
+)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -125,11 +124,20 @@ app.add_middleware(
 )
 
 
+# ------------------------------
+# ROUTES
+# ------------------------------
+
+@app.get("/")
+def root():
+    return {"message": "AQI ML API is running. Use /health or POST /forecast"}
+
+
 @app.get("/health")
 def health():
     return {
-        "ok": STATE["model"] is not None,
-        "rows": 0 if STATE["df"] is None else len(STATE["df"]),
+        "model_loaded": STATE["model"] is not None,
+        "rows": len(STATE["df"]) if STATE["df"] is not None else 0
     }
 
 
@@ -141,32 +149,27 @@ class ForecastRequest(BaseModel):
 @app.post("/forecast")
 def forecast(req: ForecastRequest):
     if STATE["df"] is None or STATE["model"] is None:
-        return {"error": "Model not trained yet"}
+        return {"error": "Model not trained yet."}
 
-    
-    print(f"🔮 Forecast request received: station={req.station}, hours={req.hours}")
-    print("🧠 Model trained on columns:", STATE["feature_cols"][:5])
-    print("📊 DataFrame shape before forecast:", STATE["df"].shape)
-    if "station_original" in STATE["df"].columns:
-        print("📊 Sample stations in df:", STATE["df"]["station_original"].unique()[:10])
-    else:
-        print("⚠️ No 'station_original' column found. Available columns:", STATE["df"].columns.tolist())
+    print(f"🔮 Forecast request → station={req.station}, hours={req.hours}")
 
     try:
         start_timestamp = pd.Timestamp(datetime.now())
+
         out = forecast_next_days(
-            STATE["df"],
-            STATE["model"],
+            df=STATE["df"],
+            model=STATE["model"],
             target_col="PM25",
             hours=req.hours,
             station=req.station,
             start_time=start_timestamp,
         )
 
-        print("✅ Forecast output sample:", out.head() if not out.empty else "⚠️ Empty DataFrame")
+        if out.empty:
+            return {"error": "No forecast generated. Possibly invalid station."}
 
-    except ValueError as e:
-        print("❌ Forecast error:", e)
+    except Exception as e:
+        print("❌ Forecast error:", str(e))
         return {"error": str(e)}
 
     return {
@@ -174,7 +177,3 @@ def forecast(req: ForecastRequest):
         "start_time": str(start_timestamp),
         "forecast": out.to_dict(orient="records"),
     }
-
-
-
-
