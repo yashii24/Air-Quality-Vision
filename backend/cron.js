@@ -5,16 +5,6 @@ const mongoose = require("mongoose");
 const RealTimeData = require("./models/realtimeAQI.model");
 const { getWAQIStationName } = require("./utils/waqiStationMapper");
 
-// const stations = [
-//   "Anand Vihar", "Burari Crossing", "Alipur", "Ashok Vihar", "Aya Nagar",
-//   "Bawana", "CRRI Mathura Road", "Chandni Chowk", "DTU", "Dwarka-Sector 8",
-//   "Dr. Karni Singh Shooting Range", "IGI Airport (T3)", "IHBAS, Dilshad Garden",
-//   "ITO", "Jahangirpuri", "Jawaharlal Nehru Stadium", "Lodhi Road IMD",
-//   "Mandir Marg", "Major Dhyan Chand National Stadium", "Mundka", "NSIT Dwarka",
-//   "Najafgarh", "Narela", "Nehru Nagar", "North Campus", "Okhla Phase-2",
-//   "Patparganj", "Punjabi Bagh", "Pusa", "R K Puram", "Rohini", "Shadipur",
-//   "Sirifort", "Sonia Vihar", "Sri Aurobindo Marg", "Wazirpur"
-// ];
 
 const stationNameMap = {
   "aya nagar": "Aya Nagar",
@@ -86,8 +76,8 @@ const stationsToFetch = [
   "R K Puram",
   "Rohini",
   "Sonia Vihar",
-  "Sri Auribindo Marg",
-  "Vivel Vihar",
+  "Sri Aurobindo Marg",
+  "Vivek Vihar",
   "Wazirpur",
 ];
 
@@ -98,7 +88,7 @@ mongoose
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 // Run every hour at minute 5
-cron.schedule("5 * * * *", async () => {
+cron.schedule("* * * * *", async () => {
   console.log("⏰ Running cron job at", new Date().toLocaleString());
 
   // const apiUrl = `https://api.waqi.info/map/bounds/?latlng=28.4037,76.8378,28.8836,77.3473&token=${process.env.WAQI_TOKEN}`;

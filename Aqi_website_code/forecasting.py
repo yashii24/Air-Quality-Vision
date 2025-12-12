@@ -8,9 +8,6 @@ def forecast_next_days(df, model, target_col="PM25", hours=72, station=None, sta
     Works with one-hot encoded station columns and preserved 'station_original'.
     """
 
-    # --------------------------
-    # 🔹 1. Robust station matching & filtering
-    # --------------------------
     def get_station_column(df, station_name: str):
         """Return the one-hot column name matching station_name, or None.
 
@@ -20,26 +17,25 @@ def forecast_next_days(df, model, target_col="PM25", hours=72, station=None, sta
         if station_name is None:
             return None
         normalized = " ".join(station_name.strip().split()).lower()
-        # find station_original values if present
         if "station_original" in df.columns:
             candidates = pd.Series(df["station_original"].unique()).astype(str)
             candidates_norm = candidates.str.strip().str.lower()
-            # try exact match
+            
             exact_idx = candidates_norm[candidates_norm == normalized]
             if not exact_idx.empty:
                 orig = candidates.iloc[exact_idx.index[0]]
                 return f"station_{orig}"
-            # fuzzy match using difflib
+    
             best = difflib.get_close_matches(normalized, candidates_norm.tolist(), n=1, cutoff=0.7)
             if best:
-                # find original casing
+                
                 idx = candidates_norm[candidates_norm == best[0]].index[0]
                 return f"station_{candidates.iloc[idx]}"
-        # fallback: look for one-hot column names directly
+        
         col_candidate = f"station_{station_name}"
         if col_candidate in df.columns:
             return col_candidate
-        # try case-insensitive column search
+        
         for c in df.columns:
             if c.lower() == col_candidate.lower():
                 return c
@@ -49,16 +45,14 @@ def forecast_next_days(df, model, target_col="PM25", hours=72, station=None, sta
         station_col = get_station_column(df, station)
         if station_col is None:
             raise ValueError(f"Station '{station}' not found in data (no matching one-hot column or station_original entry)")
-        # filter and ensure there are rows for that station
+        
         df_station = df[df.get(station_col, 0) == 1]
         if df_station.empty:
             raise ValueError(f"No data available for station '{station}' after filtering")
         df = df_station
 
         
-    # --------------------------
-    # 🔹 2. Handle timestamps
-    # --------------------------
+
     if df.empty:
         raise ValueError("No data available for forecasting.")
 
@@ -69,9 +63,7 @@ def forecast_next_days(df, model, target_col="PM25", hours=72, station=None, sta
         else df["Timestamp"].max() if "Timestamp" in df.columns else pd.Timestamp.now(tz="UTC")
     )
 
-    # --------------------------
-    # 🔹 3. Feature preparation
-    # --------------------------
+
     drop_cols = ["Timestamp", "_id", "city", "timestamp", target_col, "station_original"]
 
     if hasattr(model, "feature_names_in_"):
@@ -83,16 +75,14 @@ def forecast_next_days(df, model, target_col="PM25", hours=72, station=None, sta
 
     X_latest = latest_row.drop(columns=drop_cols, errors="ignore")
 
-    # Add missing columns as 0
+   
     for col in feature_names:
         if col not in X_latest.columns:
             X_latest[col] = 0
 
     X_latest = X_latest[feature_names]
 
-    # --------------------------
-    # 🔹 4. Forecast loop
-    # --------------------------
+
     forecasts = []
     for i in range(hours):
         y_pred = float(model.predict(X_latest)[0])
@@ -104,7 +94,7 @@ def forecast_next_days(df, model, target_col="PM25", hours=72, station=None, sta
             "station": station if station is not None else None
         })
 
-        # Update for next prediction
+       
         new_row = latest_row.copy()
         new_row["Timestamp"] = next_timestamp
         new_row[target_col] = y_pred

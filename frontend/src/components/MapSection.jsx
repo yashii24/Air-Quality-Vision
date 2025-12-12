@@ -130,27 +130,3 @@ export default function MapSection({ selectedStation }) {
 
 
 
-// // src/components/MapSection.jsx
-// import React from "react";
-// import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-// import "leaflet/dist/leaflet.css";
-
-// export default function MapSection({ lat = 28.65, lon = 77.28, location = "Anand Vihar", aqi = 175 }) {
-//   return (
-//     <div className="flex-1 rounded-xl overflow-hidden shadow h-64">
-//       <MapContainer center={[lat, lon]} zoom={12} style={{ height: "100%", width: "100%" }}>
-//         <TileLayer
-//           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-//           attribution="&copy; OpenStreetMap contributors"
-//         />
-//         <Marker position={[lat, lon]}>
-//           <Popup>
-//             {location} <br />
-//             AQI: {aqi}
-//           </Popup>
-//         </Marker>
-//       </MapContainer>
-//     </div>
-//   );
-// }
-

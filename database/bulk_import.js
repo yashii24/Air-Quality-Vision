@@ -3,8 +3,10 @@ const path = require('path');
 const csv = require('csv-parser');
 const { MongoClient } = require('mongodb');
 
+
 // ✅ Define MongoDB URI first!
-const MONGO_URI = 'mongodb://localhost:27017';
+// const MONGO_URI = 'mongodb+srv://AirQualityVision:air-quality-vision-2025@air-quality-vision.ddiulhr.mongodb.net/air_quality?retryWrites=true&w=majority';
+const MONGO_URI= 'mongodb://localhost:27017/air_quality'
 const DB_NAME = 'air_quality';
 const COLLECTION_NAME = 'hourly_data';
 

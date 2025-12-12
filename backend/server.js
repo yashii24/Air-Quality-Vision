@@ -3,7 +3,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
-// const { connectDb } = require("./utils/db")
 
 const stationRoutes = require("./routes/station");
 const aqiRoutes = require("./routes/aqi");
@@ -13,6 +12,7 @@ const mapRoutes = require('./routes/map')
 const chartRoute = require("./routes/chart")
 const trendRoutes = require("./routes/trend")
 const forecastRouter = require("./routes/forecast")
+const contactRoutes = require("./routes/contact")
 
 
 dotenv.config();
@@ -39,37 +39,30 @@ app.use("/api", mapRoutes)
 app.use("/api", chartRoute)
 app.use("/api/trend", trendRoutes)
 app.use("/api/forecast", forecastRouter) 
-
-
-
-// connectDb().then(() => {
-//     app.get('/', (req, res) => {
-//       res.send('Real-time AQI API is working ✅');
-//     });
-//     app.listen(PORT, () => {
-//       console.log(`🚀 Server running on port ${PORT}`);
-//     });
-//   })
-//   .catch((err) => {
-//     console.error("❌ MongoDB connection error:", err);
-//   });
+app.use("/api/contact", contactRoutes)
 
 
 
 
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => {
-    console.log("✅ Connected to MongoDB");
-    app.get('/', (req,res) => {
-        res.send('real time aqi is working')
-    })
+app.get('/', (req, res) => {
+  res.send('real time aqi is working');
+});
 
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error("❌ MongoDB connection error:", err);
-  });
+
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+
+  const mongoUri = process.env.MONGODB_URI;
+  if (!mongoUri) {
+    console.warn('⚠️ MONGODB_URI not set; MongoDB features will be unavailable.');
+    return;
+  }
+
+  mongoose
+    .connect(mongoUri)
+    .then(() => console.log('✅ Connected to MongoDB'))
+    .catch((err) => console.error('❌ MongoDB connection error:', err.message || err));
+});
 
   

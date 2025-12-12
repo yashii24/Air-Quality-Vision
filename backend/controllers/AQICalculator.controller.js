@@ -1,4 +1,3 @@
-// controllers/aqi.js
 const RealtimeAQI = require('../models/realtimeAQI');
 const { calculateCpcbAqi } = require('../utils/cpcbAqiCalculator');
 

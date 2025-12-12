@@ -167,11 +167,13 @@ export default function Home() {
       )}
 
 
-      <Forecast
-        station={station}
-        date={selectedDate}
-        time={new Date().toLocaleTimeString("en-GB", { hour12: false })}
-      />
+      {data && (
+        <Forecast
+          station={station}
+          date={selectedDate}
+          time={new Date().toLocaleTimeString("en-GB", { hour12: false })}
+        />
+      )}
 
       <div className="w-full">
         <StationRanking onStationClick={(name) => setSelectedStation(name)} />

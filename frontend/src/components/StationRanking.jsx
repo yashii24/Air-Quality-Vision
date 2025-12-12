@@ -17,6 +17,40 @@ const getAQIInfo = (aqi) => {
   return { label: "Unknown", color: "#999" };
 };
 
+// 👉 ADD YOUR ALLOWED STATION LIST HERE
+const ALLOWED_STATIONS = [
+  "Lodhi Road, Delhi, Delhi, India",
+  "Pusa, Delhi, Delhi, India",
+  "Delhi Institute of Tool Engineering, Wazirpur, Delhi, Delhi, India",
+  "R.K. Puram, Delhi, Delhi, India",
+  "Shadipur, Delhi, Delhi, India",
+  "National Institute of Malaria Research, Sector 8, Dwarka, Delhi, Delhi, India",
+  "ITI Shahdra, Jhilmil Industrial Area, Delhi, Delhi, India",
+  "Sonia Vihar Water Treatment Plant DJB, Delhi, Delhi, India",
+  "Shaheed Sukhdev College of Business Studies, Rohini, Delhi, Delhi, India",
+  "Aya Nagar, Delhi, Delhi, India",
+  "ITI Jahangirpuri, Delhi, Delhi, India",
+  "Bramprakash Ayurvedic Hospital, Najafgarh, Delhi, Delhi, India",
+  "CRRI Mathura Road, Delhi, Delhi, India",
+  "Burari Crossing, Delhi, Delhi, India",
+  "Punjabi Bagh, Delhi, Delhi, India",
+  "Mundka, Delhi, Delhi, India",
+  "ITO, Delhi, Delhi, India",
+  "Sri Auribindo Marg, Delhi, Delhi, India",
+  "Narela, Delhi, Delhi, India",
+  "Alipur, Delhi, Delhi, India",
+  "Pooth Khurd, Bawana, Delhi, Delhi, India",
+  "Dr. Karni Singh Shooting Range, Delhi, Delhi, India",
+  "Satyawati College, Delhi, Delhi, India",
+  "DITE Okhla, Delhi, Delhi, India",
+  "Anand Vihar, Delhi, Delhi, India",
+  "Mother Dairy Plant, Parparganj, Delhi, Delhi, India",
+  "Jawaharlal Nehru Stadium, Delhi, Delhi, India",
+  "Mandir Marg, Delhi, Delhi, India",
+  "Major Dhyan Chand National Stadium, Delhi, Delhi, India",
+  "DTU, Delhi, Delhi, India",
+];
+
 export default function StationRanking({ onStationClick }) {
   const [stations, setStations] = useState([]);
   const scrollRef = useRef(null);
@@ -26,10 +60,14 @@ export default function StationRanking({ onStationClick }) {
       try {
         const res = await axios.get("/api/locations");
         const data = res.data || [];
-        const sorted = data
+
+        // 👉 FILTER ONLY YOUR STATIONS
+        const filtered = data
+          .filter((s) => ALLOWED_STATIONS.includes(s.name))
           .filter((s) => s.aqi !== null && s.aqi !== undefined)
           .sort((a, b) => a.aqi - b.aqi);
-        setStations(sorted);
+
+        setStations(filtered);
       } catch (err) {
         console.error("Error fetching ranking data:", err);
       }
@@ -42,23 +80,24 @@ export default function StationRanking({ onStationClick }) {
   useEffect(() => {
     const interval = setInterval(() => {
       if (scrollRef.current) {
-        scrollRef.current.scrollTop += 75; // Adjust for item height
+        scrollRef.current.scrollTop += 75;
         if (
           scrollRef.current.scrollTop + scrollRef.current.clientHeight >=
           scrollRef.current.scrollHeight
         ) {
-          // Reset to top when scrolled to end
           scrollRef.current.scrollTop = 0;
         }
       }
-    }, 3000); // 3 seconds
+    }, 3000);
 
     return () => clearInterval(interval);
   }, [stations]);
 
   return (
     <div className="w-full h-[460px] bg-white rounded-2xl shadow-lg border border-gray-200">
-      <h2 className="text-3xl font-bold text-gray-900 p-4">Stations Ranked by AQI</h2>
+      <h2 className="text-3xl font-bold text-gray-900 p-4">
+        Stations Ranked by AQI
+      </h2>
       <div
         ref={scrollRef}
         className="h-[370px] overflow-y-auto px-4 py-1 space-y-3 scroll-smooth"
@@ -78,7 +117,9 @@ export default function StationRanking({ onStationClick }) {
                     {index + 1}
                   </div>
                   <div>
-                    <div className="font-medium text-sm text-gray-900">{station.name}</div>
+                    <div className="font-medium text-sm text-gray-900">
+                      {station.name}
+                    </div>
                     <div className="text-xs text-gray-700">{label}</div>
                   </div>
                 </div>

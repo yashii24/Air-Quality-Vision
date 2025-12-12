@@ -1,4 +1,3 @@
-// controllers/station.controller.js
 const HistoricalAQI = require("../models/AqiData");
 
 const getStationList = async (req, res) => {
