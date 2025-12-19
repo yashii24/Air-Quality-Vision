@@ -7,6 +7,8 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 *.lock
+logs/
+*.log
 
 # ==============================
 # Environment variables
@@ -41,6 +43,7 @@ backend/.env
 # Database / MongoDB
 # ==============================
 database/
+database/node_modules/
 dump/
 *.mongodb
 
@@ -54,6 +57,8 @@ air_quality.hourly_data.json
 Aqi_website_code/*.csv
 Aqi_website_code/*.xlsx
 Aqi_website_code/air_quality.hourly_data.csv
+Aqi_website_code/*.pyd
+Aqi_website_code/*.dll
 
 # ==============================
 # Python / ML
