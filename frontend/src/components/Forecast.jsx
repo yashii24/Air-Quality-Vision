@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
-import mlApi from "../services/mlApi";
+import api from "../services/api";
 
 export default function Forecast({ station }) {
   const [forecast, setForecast] = useState([]);
@@ -19,7 +19,7 @@ export default function Forecast({ station }) {
 
     const fetchForecast = async () => {
       try {
-        const res = await mlApi.post("/api/forecast", {
+        const res = await api.post("/api/forecast", {
           station,
           hours: 72,
         });
