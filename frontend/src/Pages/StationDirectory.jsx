@@ -1,42 +1,127 @@
-// StationDirectory.jsx
+// // StationDirectory.jsx
+// import React, { useEffect, useMemo, useState } from "react";
+// import MiniStationCard from "../components/MiniStationCard";
+// import FiltersBar from "../components/FiltersBar";
+// import StationMap from "../components/StationMap";
+
+
+// export default function StationDirectory({ apiUrl = "/api/locations", onStationClick }) {
+//   const [stations, setStations] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+
+//   // filters state
+//   const [query, setQuery] = useState("");
+//   const [zoneFilter, setZoneFilter] = useState("all");
+//   const [categoryFilter, setCategoryFilter] = useState("all");
+//   const [view, setView] = useState("list"); // 'list' | 'map'
+//   const [showSuggestions, setShowSuggestions] = useState(false);
+
+//   useEffect(() => {
+//     let mounted = true;
+//     setLoading(true);
+//     fetch(apiUrl)
+//       .then((res) => {
+//         if (!res.ok) throw new Error("Failed to fetch stations");
+//         return res.json();
+//       })
+//       .then((data) => {
+//         if (!mounted) return;
+//         setStations(data);
+//         setLoading(false);
+//       })
+//       .catch((err) => {
+//         if (!mounted) return;
+//         setError(err.message);
+//         setLoading(false);
+//       });
+//     return () => (mounted = false);
+//   }, [apiUrl]);
+
+//   const zones = useMemo(() => {
+//     const zs = new Set();
+//     stations.forEach((s) => s.zone && zs.add(s.zone));
+//     return ["all", ...Array.from(zs)];
+//   }, [stations]);
+
+//   const filtered = useMemo(() => {
+//     return stations
+//       .filter((s) => {
+//         if (zoneFilter !== "all" && (s.zone || "") !== zoneFilter) return false;
+//         if (
+//           query &&
+//           !(`${s.name || s.station || ""} ${s.zone || ""}`
+//             .toLowerCase()
+//             .includes(query.toLowerCase()))
+//         )
+//           return false;
+//         if (categoryFilter !== "all") {
+//           const aqi =
+//             s.realtime_aqi ??
+//             s.aqi ??
+//             s.calculated_indian_aqi ??
+//             s.calculated_aqi ??
+//             null;
+//           const cat = getAQICategory(aqi);
+//           if (cat !== categoryFilter) return false;
+//         }
+//         return true;
+//       })
+//       .sort((a, b) => {
+//         const ai = a.realtime_aqi ?? a.aqi ?? a.calculated_aqi ?? 0;
+//         const bi = b.realtime_aqi ?? b.aqi ?? b.calculated_aqi ?? 0;
+//         return bi - ai;
+//       });
+//   }, [stations, query, zoneFilter, categoryFilter]);
+
+//   const suggestions = useMemo(() => {
+//     if (!query) return [];
+//     return stations.filter((s) =>
+//       (s.name || s.station || "")
+//         .toLowerCase()
+//         .includes(query.toLowerCase())
+//     );
+//   }, [stations, query]);
+
+//   if (loading) return <div className="p-6">Loading stations…</div>;
+//   if (error) return <div className="p-6 text-red-500">Error: {error}</div>;
+
 import React, { useEffect, useMemo, useState } from "react";
+import api from "../services/api";
 import MiniStationCard from "../components/MiniStationCard";
 import FiltersBar from "../components/FiltersBar";
 import StationMap from "../components/StationMap";
 
-
-export default function StationDirectory({ apiUrl = "/api/locations", onStationClick }) {
+export default function StationDirectory({ onStationClick }) {
   const [stations, setStations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // filters state
   const [query, setQuery] = useState("");
   const [zoneFilter, setZoneFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
-  const [view, setView] = useState("list"); // 'list' | 'map'
+  const [view, setView] = useState("list");
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     setLoading(true);
-    fetch(apiUrl)
+
+    api
+      .get("/api/locations")
       .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch stations");
-        return res.json();
-      })
-      .then((data) => {
         if (!mounted) return;
-        setStations(data);
+        setStations(res.data);
         setLoading(false);
       })
-      .catch((err) => {
+      .catch(() => {
         if (!mounted) return;
-        setError(err.message);
+        setError("Failed to fetch stations");
         setLoading(false);
       });
+
     return () => (mounted = false);
-  }, [apiUrl]);
+  }, []);
 
   const zones = useMemo(() => {
     const zs = new Set();
@@ -47,7 +132,8 @@ export default function StationDirectory({ apiUrl = "/api/locations", onStationC
   const filtered = useMemo(() => {
     return stations
       .filter((s) => {
-        if (zoneFilter !== "all" && (s.zone || "") !== zoneFilter) return false;
+        if (zoneFilter !== "all" && (s.zone || "") !== zoneFilter)
+          return false;
         if (
           query &&
           !(`${s.name || s.station || ""} ${s.zone || ""}`
@@ -86,6 +172,7 @@ export default function StationDirectory({ apiUrl = "/api/locations", onStationC
   if (loading) return <div className="p-6">Loading stations…</div>;
   if (error) return <div className="p-6 text-red-500">Error: {error}</div>;
 
+  
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6 gap-4">

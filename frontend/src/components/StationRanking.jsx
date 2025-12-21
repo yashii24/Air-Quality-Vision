@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
+import api from "../services/api";
 
 const AQI_LEVELS = [
   { label: "Good", max: 50, color: "#009966" },
@@ -17,7 +17,7 @@ const getAQIInfo = (aqi) => {
   return { label: "Unknown", color: "#999" };
 };
 
-// 👉 ADD YOUR ALLOWED STATION LIST HERE
+// Allowed stations list stays unchanged
 const ALLOWED_STATIONS = [
   "Lodhi Road, Delhi, Delhi, India",
   "Pusa, Delhi, Delhi, India",
@@ -58,10 +58,9 @@ export default function StationRanking({ onStationClick }) {
   useEffect(() => {
     const fetchStations = async () => {
       try {
-        const res = await axios.get("/api/locations");
+        const res = await api.get("/api/locations");
         const data = res.data || [];
 
-        // 👉 FILTER ONLY YOUR STATIONS
         const filtered = data
           .filter((s) => ALLOWED_STATIONS.includes(s.name))
           .filter((s) => s.aqi !== null && s.aqi !== undefined)
@@ -76,13 +75,13 @@ export default function StationRanking({ onStationClick }) {
     fetchStations();
   }, []);
 
-  // Auto-scroll logic
   useEffect(() => {
     const interval = setInterval(() => {
       if (scrollRef.current) {
         scrollRef.current.scrollTop += 75;
         if (
-          scrollRef.current.scrollTop + scrollRef.current.clientHeight >=
+          scrollRef.current.scrollTop +
+            scrollRef.current.clientHeight >=
           scrollRef.current.scrollHeight
         ) {
           scrollRef.current.scrollTop = 0;
@@ -98,6 +97,7 @@ export default function StationRanking({ onStationClick }) {
       <h2 className="text-3xl font-bold text-gray-900 p-4">
         Stations Ranked by AQI
       </h2>
+
       <div
         ref={scrollRef}
         className="h-[370px] overflow-y-auto px-4 py-1 space-y-3 scroll-smooth"
@@ -105,12 +105,15 @@ export default function StationRanking({ onStationClick }) {
         <ul className="space-y-3">
           {stations.map((station, index) => {
             const { color, label } = getAQIInfo(station.aqi);
+
             return (
               <li
                 key={station.name}
                 className="flex items-center justify-between p-3 rounded-lg cursor-pointer transition hover:scale-[1.01]"
                 style={{ backgroundColor: color + "22" }}
-                onClick={() => onStationClick && onStationClick(station.name)}
+                onClick={() =>
+                  onStationClick && onStationClick(station.name)
+                }
               >
                 <div className="flex items-center gap-3">
                   <div className="text-base font-bold text-gray-700 w-6">

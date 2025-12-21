@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import { Mail, Phone, MapPin } from "lucide-react";
+import api from "../services/api";
 
 const Contact = () => {
-  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
   const [status, setStatus] = useState("");
 
   const handleChange = (e) => {
@@ -14,20 +19,12 @@ const Contact = () => {
     setStatus("Sending...");
 
     try {
-      const res = await fetch("http://localhost:5000/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      await api.post("/api/contact", formData);
 
-      const data = await res.json();
-      if (res.ok) {
-        setStatus("✅ Message sent successfully!");
-        setFormData({ name: "", email: "", message: "" });
-      } else {
-        setStatus(`❌ ${data.error}`);
-      }
+      setStatus("✅ Message sent successfully!");
+      setFormData({ name: "", email: "", message: "" });
     } catch (err) {
+      console.error(err);
       setStatus("❌ Failed to send message. Please try again later.");
     }
   };
@@ -37,7 +34,8 @@ const Contact = () => {
       <div className="text-center mb-12">
         <h2 className="text-4xl font-bold text-black">Get in Touch</h2>
         <p className="text-gray-600 mt-4 text-lg max-w-2xl mx-auto">
-          Have questions, suggestions, or feedback about our AQI project? We'd love to hear from you.
+          Have questions, suggestions, or feedback about our AQI project? We'd
+          love to hear from you.
         </p>
       </div>
 
@@ -47,7 +45,9 @@ const Contact = () => {
           className="bg-white shadow-xl rounded-2xl p-8 space-y-6"
         >
           <div>
-            <label className="block text-sm font-semibold text-gray-700">Name</label>
+            <label className="block text-sm font-semibold text-gray-700">
+              Name
+            </label>
             <input
               type="text"
               name="name"
@@ -59,7 +59,9 @@ const Contact = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700">Email</label>
+            <label className="block text-sm font-semibold text-gray-700">
+              Email
+            </label>
             <input
               type="email"
               name="email"
@@ -71,7 +73,9 @@ const Contact = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700">Message</label>
+            <label className="block text-sm font-semibold text-gray-700">
+              Message
+            </label>
             <textarea
               rows="4"
               name="message"
@@ -89,7 +93,9 @@ const Contact = () => {
             Send Message
           </button>
 
-          {status && <p className="mt-4 text-center text-gray-700">{status}</p>}
+          {status && (
+            <p className="mt-4 text-center text-gray-700">{status}</p>
+          )}
         </form>
       </div>
     </div>
@@ -97,4 +103,3 @@ const Contact = () => {
 };
 
 export default Contact;
-

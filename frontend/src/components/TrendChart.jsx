@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
+import api from "../services/api";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
 
 export default function TrendChart({ station, date, pollutant }) {
   const [chartData, setChartData] = useState([]);
-  const [trendType, setTrendType] = useState("hourly"); 
+  const [trendType, setTrendType] = useState("hourly");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  
-  
 
   const fetchTrendData = async () => {
     if (!station || !date || !pollutant) return;
@@ -20,16 +25,21 @@ export default function TrendChart({ station, date, pollutant }) {
     try {
       const endpoint =
         trendType === "hourly"
-          ? `/api/trend/hourly?station=${encodeURIComponent(station)}&date=${date}&pollutant=${pollutant}`
-          : `/api/trend/daily?station=${encodeURIComponent(station)}&pollutant=${pollutant}&month=${date.slice(0, 7)}`;
+          ? `/api/trend/hourly?station=${encodeURIComponent(
+              station
+            )}&date=${date}&pollutant=${pollutant}`
+          : `/api/trend/daily?station=${encodeURIComponent(
+              station
+            )}&pollutant=${pollutant}&month=${date.slice(0, 7)}`;
 
-      const res = await axios.get(endpoint);
-
+      const res = await api.get(endpoint);
       const data = res.data?.data ?? [];
 
-   
       const formatted = data.map((item) => ({
-        name: trendType === "hourly" ? `${item.hour}:00` : item.date?.split("T")[0] || `Day ${item.day}`,
+        name:
+          trendType === "hourly"
+            ? `${item.hour}:00`
+            : item.date?.split("T")[0] || `Day ${item.day}`,
         value: item.value ?? null,
       }));
 
@@ -52,7 +62,9 @@ export default function TrendChart({ station, date, pollutant }) {
         <div className="flex gap-2">
           <button
             className={`px-3 py-1 text-sm rounded ${
-              trendType === "hourly" ? "bg-blue-600 text-white" : "bg-gray-200"
+              trendType === "hourly"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200"
             }`}
             onClick={() => setTrendType("hourly")}
           >
@@ -60,7 +72,9 @@ export default function TrendChart({ station, date, pollutant }) {
           </button>
           <button
             className={`px-3 py-1 text-sm rounded ${
-              trendType === "daily" ? "bg-blue-600 text-white" : "bg-gray-200"
+              trendType === "daily"
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200"
             }`}
             onClick={() => setTrendType("daily")}
           >
@@ -77,11 +91,10 @@ export default function TrendChart({ station, date, pollutant }) {
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" textAnchor="end" height={60}>
-            </XAxis>
+            <XAxis dataKey="name" height={60} />
             <YAxis />
             <Tooltip
-              formatter={(value) => [`${value}`, 'Value']}
+              formatter={(value) => [`${value}`, "Value"]}
               labelFormatter={(label) => `Date: ${label}`}
             />
             <Line
@@ -91,7 +104,7 @@ export default function TrendChart({ station, date, pollutant }) {
               strokeWidth={2}
               dot={{ r: 2 }}
               activeDot={{ r: 4 }}
-              isAnimationActive={true}
+              isAnimationActive
             />
           </LineChart>
         </ResponsiveContainer>
@@ -101,8 +114,6 @@ export default function TrendChart({ station, date, pollutant }) {
     </div>
   );
 }
-
-
 
 
 

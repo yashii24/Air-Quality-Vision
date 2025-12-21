@@ -1,6 +1,6 @@
 // src/pages/Home.jsx
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 import InputForm from "../components/InputForm";
 import AQICard from "../components/AQICard";
 import MapSection from "../components/MapSection";
@@ -33,10 +33,10 @@ export default function Home() {
 
       if (date === today) {
         // Real-time data
-        res = await axios.get(`/api/realtime?station=${encodeURIComponent(station)}`);
+        res = await api.get(`/api/realtime?station=${encodeURIComponent(station)}`);
       } else {
         // Historical data
-        res = await axios.get(
+        res = await api.get(
           `/api/aqi?station=${encodeURIComponent(station)}&date=${date}&hour=${hour}`
         );
       }

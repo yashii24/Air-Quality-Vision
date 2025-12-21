@@ -1,5 +1,10 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
-import axios from "axios";
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  useContext,
+} from "react";
+import api from "../services/api";
 
 const StationsContext = createContext();
 
@@ -16,10 +21,14 @@ export function StationsProvider({ children }) {
     // 2️⃣ Fetch from API (background refresh)
     const fetchStations = async () => {
       try {
-        const res = await axios.get("/api/stations");
-        if (res.data.stations) {
+        const res = await api.get("/api/stations");
+
+        if (res.data?.stations) {
           setStations(res.data.stations);
-          localStorage.setItem("stationsList", JSON.stringify(res.data.stations));
+          localStorage.setItem(
+            "stationsList",
+            JSON.stringify(res.data.stations)
+          );
         }
       } catch (err) {
         console.error("Error fetching stations:", err);
