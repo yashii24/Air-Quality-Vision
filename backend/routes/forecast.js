@@ -6,7 +6,7 @@ const router = express.Router();
 router.post("/", async (req, res) => {
   const { station, hours = 72} = req.body;
   try {
-    const response = await axios.post("http://127.0.0.1:8000/forecast", {
+    const response = await axios.post(`${process.env.ML_API_URL}/forecast`, {
       station,
       hours
     });
