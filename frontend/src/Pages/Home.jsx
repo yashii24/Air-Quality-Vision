@@ -1,4 +1,3 @@
-// src/pages/Home.jsx
 import React, { useState } from "react";
 import api from "../services/api";
 import InputForm from "../components/InputForm";
