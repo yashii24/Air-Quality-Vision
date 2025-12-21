@@ -19,10 +19,16 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors({
-  origin: process.env.CORS_ORIGIN,
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",                 // local dev
+      "https://air-quality-vision.vercel.app", // production frontend
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: false, // keep false unless you use cookies
+  })
+);
 
 app.use(express.json());
 
