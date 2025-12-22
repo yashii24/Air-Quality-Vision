@@ -107,7 +107,7 @@ async def lifespan(app):
     # print("✅ Model trained and ready.")
     # yield
 
-     df = preprocess_data(df)
+    df = preprocess_data(df)
 
     STATE["df"] = df
     STATE["model"] = load("pm25_model.pkl")
