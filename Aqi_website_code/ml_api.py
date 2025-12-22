@@ -39,9 +39,10 @@ def load_data_from_mongo():
             "timestamp": 1,
             "pollutants": 1,
         }
-    ).limit(5000)
+    )
 
     df = pd.DataFrame(list(cursor))
+    df["station_original"] = df["station"]
     print(f"✅ Loaded {len(df)} rows")
 
     if df.empty:
@@ -152,6 +153,12 @@ def forecast(req: ForecastRequest):
         return {"error": "Model not trained yet."}
 
     print(f"🔮 Forecast request → station={req.station}, hours={req.hours}")
+    
+
+    print(
+        "Active station columns:",
+        [c for c in STATE["df"].columns if c.startswith("station_")]
+    )
 
     try:
         start_timestamp = pd.Timestamp(datetime.now())

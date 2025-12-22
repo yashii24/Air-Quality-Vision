@@ -41,15 +41,20 @@ def forecast_next_days(df, model, target_col="PM25", hours=72, station=None, sta
                 return c
         return None
 
+    # if station is not None:
+    #     station_col = get_station_column(df, station)
+    #     if station_col is None:
+    #         raise ValueError(f"Station '{station}' not found in data (no matching one-hot column or station_original entry)")
+        
+    #     df_station = df[df.get(station_col, 0) == 1]
+    #     if df_station.empty:
+    #         raise ValueError(f"No data available for station '{station}' after filtering")
+    #     df = df_station
+
     if station is not None:
         station_col = get_station_column(df, station)
         if station_col is None:
-            raise ValueError(f"Station '{station}' not found in data (no matching one-hot column or station_original entry)")
-        
-        df_station = df[df.get(station_col, 0) == 1]
-        if df_station.empty:
-            raise ValueError(f"No data available for station '{station}' after filtering")
-        df = df_station
+            raise ValueError(f"Station '{station}' not found in data")
 
         
 
@@ -57,6 +62,15 @@ def forecast_next_days(df, model, target_col="PM25", hours=72, station=None, sta
         raise ValueError("No data available for forecasting.")
 
     latest_row = df.iloc[-1:].copy()
+    # ✅ Reset all station one-hot columns
+    for c in latest_row.columns:
+        if c.startswith("station_"):
+            latest_row[c] = 0
+
+    # ✅ Activate requested station
+    if station is not None:
+        latest_row[station_col] = 1
+        
     last_timestamp = (
         pd.to_datetime(start_time)
         if start_time is not None
