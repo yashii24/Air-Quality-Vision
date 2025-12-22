@@ -10,12 +10,16 @@ from modeling import train_model
 from forecasting import forecast_next_days
 from datetime import datetime
 from joblib import load
+from dotenv import load_dotenv
+
+
+load_dotenv()
 
 
 # ------------------------------
 # ENV VARIABLES (Render)
 # ------------------------------
-MONGO_URI = os.getenv("MONGO_URI")
+MONGO_URI = os.getenv("MONGODB_URI")
 DB_NAME = os.getenv("DB_NAME")
 COLLECTION_NAME = os.getenv("COLLECTION_NAME")
 
