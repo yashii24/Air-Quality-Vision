@@ -9,6 +9,7 @@ from preprocessing import preprocess_data
 from modeling import train_model
 from forecasting import forecast_next_days
 from datetime import datetime
+from joblib import load
 
 
 # ------------------------------
@@ -70,7 +71,14 @@ def load_data_from_mongo():
     if "timestamp" in df.columns:
         df.rename(columns={"timestamp": "Timestamp"}, inplace=True)
 
-    df["Timestamp"] = pd.to_datetime(df["Timestamp"], errors="coerce")
+    # df["Timestamp"] = pd.to_datetime(df["Timestamp"], errors="coerce")
+
+    df["Timestamp"] = pd.to_datetime(
+        df["Timestamp"],
+        errors="coerce",
+        utc=True
+   )
+
 
     # Remove missing target values
     if "PM25" in df.columns:
