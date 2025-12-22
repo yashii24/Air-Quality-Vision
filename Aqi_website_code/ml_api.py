@@ -33,13 +33,13 @@ def load_data_from_mongo():
     cursor = collection.find(
         {},
         {
-            "_id": 1,
+            "_id": 0,
             "station": 1,
             "city": 1,
             "timestamp": 1,
             "pollutants": 1,
         }
-    )
+    ).sort("timestamp", -1).limit(3000)
 
     df = pd.DataFrame(list(cursor))
     df["station_original"] = df["station"]
@@ -86,26 +86,35 @@ def load_data_from_mongo():
 # ------------------------------
 @asynccontextmanager
 async def lifespan(app):
+    print("🚀 Starting ML API...")
     df = load_data_from_mongo()
 
     if df.empty:
         print("⚠️ Empty DB → Skipping training")
-        STATE["df"] = pd.DataFrame()
-        STATE["model"] = None
-        STATE["feature_cols"] = []
+        # STATE["df"] = pd.DataFrame()
+        # STATE["model"] = None
+        # STATE["feature_cols"] = []
         yield
         return
 
-    df = preprocess_data(df)
-    results = train_model(df)
+    # df = preprocess_data(df)
+    # results = train_model(df)
+
+    # STATE["df"] = df
+    # STATE["model"] = results["model"]
+    # STATE["feature_cols"] = list(results["X_train"].columns)
+
+    # print("✅ Model trained and ready.")
+    # yield
+
+     df = preprocess_data(df)
 
     STATE["df"] = df
-    STATE["model"] = results["model"]
-    STATE["feature_cols"] = list(results["X_train"].columns)
+    STATE["model"] = load("pm25_model.pkl")
+    STATE["feature_cols"] = load("feature_cols.pkl")
 
-    print("✅ Model trained and ready.")
+    print("✅ Model loaded successfully")
     yield
-
 
 # ------------------------------
 # FastAPI App
@@ -147,40 +156,22 @@ class ForecastRequest(BaseModel):
     hours: int = 72
 
 
+# 
+
 @app.post("/forecast")
 def forecast(req: ForecastRequest):
-    if STATE["df"] is None or STATE["model"] is None:
-        return {"error": "Model not trained yet."}
+    print(f"🔮 Forecast → {req.station} ({req.hours}h)")
 
-    print(f"🔮 Forecast request → station={req.station}, hours={req.hours}")
-    
-
-    print(
-        "Active station columns:",
-        [c for c in STATE["df"].columns if c.startswith("station_")]
+    out = forecast_next_days(
+        df=STATE["df"],
+        model=STATE["model"],
+        target_col="PM25",
+        hours=req.hours,
+        station=req.station,
+        start_time=pd.Timestamp(datetime.now())
     )
-
-    try:
-        start_timestamp = pd.Timestamp(datetime.now())
-
-        out = forecast_next_days(
-            df=STATE["df"],
-            model=STATE["model"],
-            target_col="PM25",
-            hours=req.hours,
-            station=req.station,
-            start_time=start_timestamp,
-        )
-
-        if out.empty:
-            return {"error": "No forecast generated. Possibly invalid station."}
-
-    except Exception as e:
-        print("❌ Forecast error:", str(e))
-        return {"error": str(e)}
 
     return {
         "station": req.station,
-        "start_time": str(start_timestamp),
-        "forecast": out.to_dict(orient="records"),
+        "forecast": out.to_dict(orient="records")
     }

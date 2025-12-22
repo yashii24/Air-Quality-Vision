@@ -1,5 +1,6 @@
 import pandas as pd
-from ml_api import load_data_from_mongo, preprocess_data
+from ml_api import load_data_from_mongo
+from preprocessing import preprocess_data
 from modeling import train_model
 from joblib import dump
 
@@ -9,8 +10,9 @@ df = preprocess_data(df)
 
 # Train model
 results = train_model(df)
-model = results["model"]
 
-# Save trained model
-dump(model, "pm25_model.pkl")
-print("✅ Model trained and saved as pm25_model.pkl")
+# Save model + feature columns
+dump(results["model"], "pm25_model.pkl")
+dump(list(results["X_train"].columns), "feature_cols.pkl")
+
+print("✅ Model and feature columns saved")
