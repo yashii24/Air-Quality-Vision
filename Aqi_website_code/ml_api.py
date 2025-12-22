@@ -19,7 +19,7 @@ load_dotenv()
 # ------------------------------
 # ENV VARIABLES (Render)
 # ------------------------------
-MONGO_URI = os.getenv("MONGODB_URI")
+MONGO_URI = os.getenv("MONGO_URI")
 DB_NAME = os.getenv("DB_NAME")
 COLLECTION_NAME = os.getenv("COLLECTION_NAME")
 
@@ -31,7 +31,7 @@ STATE = {"df": None, "model": None, "feature_cols": None}
 # ------------------------------
 def load_data_from_mongo():
     print("🔹 Connecting to MongoDB...")
-    client = MongoClient(MONGO_URI)
+    client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
     collection = client[DB_NAME][COLLECTION_NAME]
 
     print("🔹 Fetching limited dataset...")
